@@ -1,0 +1,11 @@
+streamlit
+openai-whisper
+torch
+torchvision
+torchaudio
+transformers
+sentence-transformers
+numpy
+pandas
+scipy
+faiss-cpu
