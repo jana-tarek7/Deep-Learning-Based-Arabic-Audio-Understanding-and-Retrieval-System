@@ -1,20 +1,39 @@
 import streamlit as st
-from src.asr import transcribe
-from src.summarization import summarize
+import torch
 
-st.title("Arabic Audio Understanding System")
+from asr.audio_utils import load_audio
+from asr.whisper_model import processor as whisper_processor, transcribe_whisper
+from asr.wav2vec_model import transcribe_wav2vec
+from summarization.summarizer import summarize
 
-audio_file = st.file_uploader("Upload audio file")
+st.set_page_config(page_title="Arabic Audio AI System")
 
-if audio_file:
-    with open("temp.wav", "wb") as f:
-        f.write(audio_file.read())
+st.title("🎙️ Arabic Audio Understanding System")
 
-    text = transcribe("temp.wav")
-    summary = summarize(text)
+uploaded_file = st.file_uploader("Upload audio file", type=["wav", "mp3"])
 
-    st.subheader("Transcript")
-    st.write(text)
+model_choice = st.selectbox("Choose ASR Model", ["Whisper", "Wav2Vec2"])
 
-    st.subheader("Summary")
+if uploaded_file is not None:
+
+    path = f"temp_audio.wav"
+    with open(path, "wb") as f:
+        f.write(uploaded_file.read())
+
+    st.audio(path)
+
+    audio = load_audio(path)
+
+    st.subheader("🧠 Transcription")
+
+    if model_choice == "Whisper":
+        inputs = whisper_processor(audio, sampling_rate=16000, return_tensors="pt")
+        transcript = transcribe_whisper(inputs)
+    else:
+        transcript = transcribe_wav2vec(audio)
+
+    st.write(transcript)
+
+    st.subheader("📝 Summary")
+    summary = summarize(transcript)
     st.write(summary)
