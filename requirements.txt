@@ -1,14 +1,13 @@
+streamlit
 torch
 torchaudio
 transformers
-datasets
 sentence-transformers
 faiss-cpu
 rank-bm25
-jiwer
 librosa
+jiwer
 evaluate
 rouge-score
-streamlit
 numpy
 pandas
